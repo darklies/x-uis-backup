@@ -79,7 +79,8 @@ function main_menu() {
     echo "2) Uninstall the backup system"
     echo "3) Show the list of configured servers"
     echo "4) Add new servers for backup"
-    echo "5) Exit"
+    echo "5) Update backup schedule"
+    echo "6) Exit"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
 
@@ -96,8 +97,12 @@ function main_menu() {
 			
 	4)
             add_servers
+            ;;
+	    
+	5)
+            update_cron
             ;;	
-        5)
+        6)
             exit 0
             ;;
         *)
@@ -105,6 +110,40 @@ function main_menu() {
             main_menu
             ;;
     esac
+}
+# تابع تغییر زمان‌بندی
+function update_cron() {
+    echo "Updating the backup schedule..."
+    
+    # حذف کرون‌جاب قبلی
+    echo "Removing existing cron job..."
+    crontab -l | grep -v "$TRANSFER_SCRIPT" | crontab -
+
+    # دریافت زمان‌بندی جدید
+    echo "Set a new schedule for the backup script:"
+    echo "1) Every X minutes"
+    echo "2) Every X hours"
+    echo "3) Every X days"
+    read -p "Select an option (1, 2, or 3): " TIME_OPTION
+
+    if [[ "$TIME_OPTION" == "1" ]]; then
+        read -p "Enter the interval in minutes (e.g., 30 for every 30 minutes): " MINUTES
+        CRON_JOB="*/$MINUTES * * * * $TRANSFER_SCRIPT"
+    elif [[ "$TIME_OPTION" == "2" ]]; then
+        read -p "Enter the interval in hours (e.g., 2 for every 2 hours): " HOURS
+        CRON_JOB="0 */$HOURS * * * $TRANSFER_SCRIPT"
+    elif [[ "$TIME_OPTION" == "3" ]]; then
+        read -p "Enter the interval in days (e.g., 1 for every day): " DAYS
+        CRON_JOB="0 0 */$DAYS * * $TRANSFER_SCRIPT"
+    else
+        echo "Invalid option. Skipping schedule update."
+        return
+    fi
+
+    # افزودن زمان‌بندی جدید به کرون
+    (crontab -l; echo "$CRON_JOB") | crontab -
+    echo "New schedule applied successfully."
+    sleep 2
 }
 # تابع اضافه کردن سرورهای جدید
 function add_servers() {
