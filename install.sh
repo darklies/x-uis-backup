@@ -72,6 +72,7 @@ CONFIG_FILE="/etc/iranian_servers.conf"
 
 # منوی اصلی
 function main_menu() {
+    clear
     echo "======================================"
     echo -e "\033[1;96mMulti-Server File Transfer Management\033[0m"
     echo "======================================"
@@ -81,7 +82,7 @@ function main_menu() {
     echo -e "4) \033[1;93mAdd new servers\033[0m"
     echo -e "5) \033[1;93mExit\033[0m"
     echo "======================================"
-   
+
     read -p "Enter your choice [1-5]: " CHOICE
 
     if [[ -z "$CHOICE" ]]; then
@@ -102,6 +103,7 @@ function main_menu() {
         main_menu
     fi
 }
+
 # تابع اضافه کردن سرورهای جدید
 function add_servers() {
     echo "Adding new servers to the configuration..."
