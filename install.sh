@@ -78,7 +78,7 @@ function main_menu() {
     echo "1) Install the backup system"
     echo "2) Uninstall the backup system"
     echo "3) Show the list of configured servers"
-    echo "4) Show the list of configured servers"
+    echo "4) Add new servers for backup"
     echo "5) Exit"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
