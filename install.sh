@@ -78,7 +78,8 @@ function main_menu() {
     echo "1) Install the backup system"
     echo "2) Uninstall the backup system"
     echo "3) Show the list of configured servers"
-    echo "4) Exit"
+    echo "4) Show the list of configured servers"
+    echo "5) Exit"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
 
@@ -93,7 +94,7 @@ function main_menu() {
             show_servers
             ;;
 			
-		 4)
+	4)
             add_servers
             ;;	
         5)
