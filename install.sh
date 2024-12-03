@@ -73,12 +73,13 @@ CONFIG_FILE="/etc/iranian_servers.conf"
 # منوی اصلی
 function main_menu() {
     echo "======================================"
-    echo "Multi-Server File Transfer Management"
+    echo -e "\033[1;96mMulti-Server File Transfer Management\033[0m"
     echo "======================================"
-    echo "1) Install the backup system"
-    echo "2) Uninstall the backup system"
-    echo "3) Show the list of configured servers"
-    echo "4) Exit"
+    echo -e "1) \033[1;92mInstall the backup system\033[0m"
+    echo -e "2) \033[1;91mUninstall the backup system\033[0m"
+    echo -e "3) \033[1;94mShow the list of configured servers\033[0m"
+    echo -e "4) \033[1;93mAdd new servers\033[0m"
+    echo -e "5) \033[1;93mExit\033[0m"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
 
@@ -92,14 +93,45 @@ function main_menu() {
         3)
             show_servers
             ;;
-        4)
-            exit 0
-            ;;
-        *)
-            echo "Invalid option. Please try again."
-            main_menu
-            ;;
-    esac
+        4) add_servers ;;
+            5) 
+                echo -e "\033[1;92mGoodbye! Exiting...\033[0m"
+                exit 0 ;;
+        esac
+    else
+        echo -e "\033[1;91mInvalid option. Please try again.\033[0m"
+        sleep 2
+        main_menu
+    fi
+}
+# تابع اضافه کردن سرورهای جدید
+function add_servers() {
+    echo "Adding new servers to the configuration..."
+    if [[ ! -f $CONFIG_FILE ]]; then
+        echo "Configuration file not found. Creating a new one..."
+        touch $CONFIG_FILE
+    fi
+
+    while true; do
+        read -p "Enter the IP of a new server (or press Enter to finish): " SERVER_IP
+        if [[ -z "$SERVER_IP" ]]; then
+            break
+        fi
+        read -p "Enter the username for $SERVER_IP: " SERVER_USER
+        read -p "Enter the file path to transfer from $SERVER_IP: " FILE_PATH
+
+        NEW_SERVER="$SERVER_USER@$SERVER_IP:$FILE_PATH"
+        if grep -q "$NEW_SERVER" $CONFIG_FILE; then
+            echo "Server $SERVER_IP is already in the configuration."
+        else
+            echo $NEW_SERVER >> $CONFIG_FILE
+            echo "Added $NEW_SERVER to the configuration."
+        fi
+    done
+
+    echo "Updated server configuration:"
+    cat $CONFIG_FILE
+    sleep 2
 }
 
 # نصب سیستم
