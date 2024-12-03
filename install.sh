@@ -81,19 +81,17 @@ function main_menu() {
     echo -e "4) \033[1;93mAdd new servers\033[0m"
     echo -e "5) \033[1;93mExit\033[0m"
     echo "======================================"
-    read -p "Enter your choice: " CHOICE
+   
+    read -p "Enter your choice [1-5]: " CHOICE
 
-    case $CHOICE in
-        1)
-            install_system
-            ;;
-        2)
-            uninstall_system
-            ;;
-        3)
-            show_servers
-            ;;
-        4) add_servers ;;
+    if [[ -z "$CHOICE" ]]; then
+        return
+    elif [[ "$CHOICE" =~ ^[1-5]$ ]]; then
+        case $CHOICE in
+            1) install_system ;;
+            2) uninstall_system ;;
+            3) show_servers ;;
+            4) add_servers ;;
             5) 
                 echo -e "\033[1;92mGoodbye! Exiting...\033[0m"
                 exit 0 ;;
