@@ -243,18 +243,31 @@ EOL
 }
 
 # حذف سیستم
-function uninstall_cron() {
-    echo "Removing script from cron jobs..."
-    crontab -l | grep -v "$TRANSFER_SCRIPT" | crontab -
-    echo "Script removed from cron jobs."
-}
-
 function uninstall_system() {
     echo "Uninstalling the backup system..."
-    rm -f $TRANSFER_SCRIPT  # حذف فایل اسکریپت
-    rm -f $CONFIG_FILE      # حذف فایل تنظیمات
-    uninstall_cron          # حذف کرون‌جاب مرتبط
-    echo "Backup system removed."
+
+    # حذف فایل اسکریپت انتقال
+    if [[ -f /usr/local/bin/pull_and_send.sh ]]; then
+        rm -f /usr/local/bin/pull_and_send.sh
+        echo "Removed transfer script: /usr/local/bin/pull_and_send.sh"
+    else
+        echo "Transfer script not found."
+    fi
+
+    # حذف فایل تنظیمات
+    if [[ -f /etc/iranian_servers.conf ]]; then
+        rm -f /etc/iranian_servers.conf
+        echo "Removed server configuration file: /etc/iranian_servers.conf"
+    else
+        echo "Server configuration file not found."
+    fi
+
+    # حذف کرون‌جاب مرتبط
+    echo "Removing script from cron jobs..."
+    crontab -l | grep -v "/usr/local/bin/pull_and_send.sh" | crontab -
+    echo "Cron job removed."
+
+    echo "Backup system uninstalled successfully."
 }
 
 # نمایش سرورها
