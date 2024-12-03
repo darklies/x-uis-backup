@@ -114,6 +114,12 @@ function add_servers() {
         touch $CONFIG_FILE
     fi
 
+    # تولید کلید SSH در صورت نبود
+    if [[ ! -f ~/.ssh/id_rsa ]]; then
+        echo "Creating SSH key for password-less access..."
+        ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+    fi
+
     while true; do
         read -p "Enter the IP of a new server (or press Enter to finish): " SERVER_IP
         if [[ -z "$SERVER_IP" ]]; then
@@ -128,6 +134,15 @@ function add_servers() {
         else
             echo $NEW_SERVER >> $CONFIG_FILE
             echo "Added $NEW_SERVER to the configuration."
+
+            # کپی کلید SSH روی سرور جدید
+            echo "Setting up SSH access for $SERVER_IP..."
+            ssh-copy-id -i ~/.ssh/id_rsa.pub "$SERVER_USER@$SERVER_IP"
+            if [ $? -eq 0 ]; then
+                echo "SSH access configured successfully for $SERVER_IP."
+            else
+                echo "Failed to configure SSH access for $SERVER_IP."
+            fi
         fi
     done
 
@@ -135,6 +150,7 @@ function add_servers() {
     cat $CONFIG_FILE
     sleep 2
 }
+
 
 # نصب سیستم
 function install_system() {
