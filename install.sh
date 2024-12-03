@@ -72,38 +72,39 @@ CONFIG_FILE="/etc/iranian_servers.conf"
 
 # منوی اصلی
 function main_menu() {
-    clear
     echo "======================================"
-    echo -e "\033[1;96mMulti-Server File Transfer Management\033[0m"
+    echo "Multi-Server File Transfer Management"
     echo "======================================"
-    echo -e "1) \033[1;92mInstall the backup system\033[0m"
-    echo -e "2) \033[1;91mUninstall the backup system\033[0m"
-    echo -e "3) \033[1;94mShow the list of configured servers\033[0m"
-    echo -e "4) \033[1;93mAdd new servers\033[0m"
-    echo -e "5) \033[1;93mExit\033[0m"
+    echo "1) Install the backup system"
+    echo "2) Uninstall the backup system"
+    echo "3) Show the list of configured servers"
+    echo "4) Exit"
     echo "======================================"
+    read -p "Enter your choice: " CHOICE
 
-    read -p "Enter your choice [1-5]: " CHOICE
-
-    if [[ -z "$CHOICE" ]]; then
-        return
-    elif [[ "$CHOICE" =~ ^[1-5]$ ]]; then
-        case $CHOICE in
-            1) install_system ;;
-            2) uninstall_system ;;
-            3) show_servers ;;
-            4) add_servers ;;
-            5) 
-                echo -e "\033[1;92mGoodbye! Exiting...\033[0m"
-                exit 0 ;;
-        esac
-    else
-        echo -e "\033[1;91mInvalid option. Please try again.\033[0m"
-        sleep 2
-        main_menu
-    fi
+    case $CHOICE in
+        1)
+            install_system
+            ;;
+        2)
+            uninstall_system
+            ;;
+        3)
+            show_servers
+            ;;
+			
+		 4)
+            add_servers
+            ;;	
+        5)
+            exit 0
+            ;;
+        *)
+            echo "Invalid option. Please try again."
+            main_menu
+            ;;
+    esac
 }
-
 # تابع اضافه کردن سرورهای جدید
 function add_servers() {
     echo "Adding new servers to the configuration..."
