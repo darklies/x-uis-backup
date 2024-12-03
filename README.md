@@ -15,6 +15,7 @@ Run the following command to install the backup system on your server:
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/darklies/x-uis-backup/main/install.sh)
+```
 📋 Features
 Backup Management: Automatically pull backups from multiple servers.
 Telegram Integration: Send backups directly to a Telegram bot.
