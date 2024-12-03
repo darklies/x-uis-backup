@@ -168,20 +168,22 @@ function add_servers() {
         read -p "Enter the file path to transfer from $SERVER_IP: " FILE_PATH
 
         NEW_SERVER="$SERVER_USER@$SERVER_IP:$FILE_PATH"
-        if grep -q "$NEW_SERVER" $CONFIG_FILE; then
-            echo "Server $SERVER_IP is already in the configuration."
-        else
+
+        # اضافه کردن سرور به فایل تنظیمات (اگر وجود ندارد)
+        if ! grep -q "$NEW_SERVER" $CONFIG_FILE; then
             echo $NEW_SERVER >> $CONFIG_FILE
             echo "Added $NEW_SERVER to the configuration."
+        else
+            echo "Server $SERVER_IP is already in the configuration."
+        fi
 
-            # کپی کلید SSH روی سرور جدید
-            echo "Setting up SSH access for $SERVER_IP..."
-            ssh-copy-id -i ~/.ssh/id_rsa.pub "$SERVER_USER@$SERVER_IP"
-            if [ $? -eq 0 ]; then
-                echo "SSH access configured successfully for $SERVER_IP."
-            else
-                echo "Failed to configure SSH access for $SERVER_IP."
-            fi
+        # همیشه کلید SSH را به سرور اضافه کن
+        echo "Setting up SSH access for $SERVER_IP..."
+        ssh-copy-id -i ~/.ssh/id_rsa.pub "$SERVER_USER@$SERVER_IP"
+        if [ $? -eq 0 ]; then
+            echo "SSH access configured successfully for $SERVER_IP."
+        else
+            echo "Failed to configure SSH access for $SERVER_IP."
         fi
     done
 
@@ -189,7 +191,6 @@ function add_servers() {
     cat $CONFIG_FILE
     sleep 2
 }
-
 
 # نصب سیستم
 function install_system() {
