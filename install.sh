@@ -285,23 +285,29 @@ for SERVER in \$IRANIAN_SERVERS; do
     if [ \$? -eq 0 ]; then
         echo "File pulled successfully: \$NEW_FILENAME"
 
-        # ارسال فایل به تلگرام
-        echo "Sending file to Telegram..."
-        curl -F "chat_id=\$CHAT_ID" \
-             -F "document=@/tmp/\$NEW_FILENAME" \
-             -F "caption=File from \$SERVER_IP on \$CURRENT_DATE at \$CURRENT_TIME" \
-             "https://api.telegram.org/bot\$BOT_TOKEN/sendDocument"
+# اطلاعات تاریخ، ساعت، هاست و آی‌پی
+CURRENT_DATE=$(date +"%Y-%m-%d")
+CURRENT_TIME=$(date +"%H:%M:%S")
+HOSTNAME=$(hostname)
+SERVER_IP=$(curl -s https://api.ipify.org)
 
-        # بررسی موفقیت ارسال به تلگرام
-        if [ \$? -eq 0 ]; then
-            echo "File sent to Telegram successfully."
-            rm -f /tmp/\$NEW_FILENAME
-        else
-            echo "Failed to send file to Telegram. File retained: /tmp/\$NEW_FILENAME"
-        fi
-    else
-        echo "Failed to pull file from \$USER_HOST:\$FILE_PATH"
-    fi
+# کپشن جدید برای فایل
+CAPTION="💻 Host: $HOSTNAME\n🌐 IPv4: $SERVER_IP\n⏰ Date&Time: $CURRENT_DATE $CURRENT_TIME"
+
+# ارسال فایل به تلگرام
+curl -F "chat_id=$CHAT_ID" \
+     -F "document=@/tmp/$NEW_FILENAME" \
+     -F "caption=$CAPTION" \
+     "https://api.telegram.org/bot$BOT_TOKEN/sendDocument"
+
+# بررسی موفقیت ارسال به تلگرام
+if [ $? -eq 0 ]; then
+    echo "File sent to Telegram successfully."
+    rm -f /tmp/$NEW_FILENAME
+else
+    echo "Failed to send file to Telegram. File retained: /tmp/$NEW_FILENAME"
+fi
+
 done
 EOL
 
