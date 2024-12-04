@@ -80,7 +80,7 @@ function main_menu() {
     echo "3) Show the list of configured servers"
     echo "4) Add new servers for backup"
     echo "5) Update backup schedule"
-    echo "6) Update backup schedule"
+    echo "6) backup now"
     echo "7) Exit"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
