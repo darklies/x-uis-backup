@@ -80,8 +80,7 @@ function main_menu() {
     echo "3) Show the list of configured servers"
     echo "4) Add new servers for backup"
     echo "5) Update backup schedule"
-    echo "6) Backup Now"
-    echo "7) Exit"
+    echo "6) Exit"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
 
@@ -102,11 +101,8 @@ function main_menu() {
 	    
 	5)
             update_cron
-            ;;
-	6)
-            backup_now
-            ;;		
-        7)
+            ;;	
+        6)
             exit 0
             ;;
         *)
@@ -115,60 +111,6 @@ function main_menu() {
             ;;
     esac
 }
-# backup دستی
-function backup_now() {
-    echo "Starting immediate backup process..."
-
-    if [[ ! -f $CONFIG_FILE ]]; then
-        echo "Configuration file not found. No servers are configured."
-        return
-    fi
-
-    # اطلاعات تاریخ و زمان
-    CURRENT_DATE=$(date +"%Y-%m-%d")
-    CURRENT_TIME=$(date +"%H:%M:%S")
-
-    # خواندن لیست سرورها
-    while read -r SERVER; do
-        USER_HOST=$(echo "$SERVER" | cut -d':' -f1)
-        FILE_PATH=$(echo "$SERVER" | cut -d':' -f2)
-        SERVER_IP=$(echo "$USER_HOST" | cut -d'@' -f2)
-
-        # نام فایل جدید
-        NEW_FILENAME="/tmp/${SERVER_IP}_${CURRENT_DATE}_${CURRENT_TIME}_backup.db"
-
-        # کپی فایل
-        echo "Pulling backup from $USER_HOST:$FILE_PATH..."
-        scp "$USER_HOST:$FILE_PATH" "$NEW_FILENAME"
-
-        if [ $? -eq 0 ]; then
-            echo "File pulled successfully: $NEW_FILENAME"
-
-            # ارسال به تلگرام
-            CAPTION="💻 Host: $(hostname)\n🌐 IPv4: $(curl -s https://api.ipify.org)\n⏰ Date&Time: $CURRENT_DATE $CURRENT_TIME"
-            echo "Sending file to Telegram..."
-            curl -F "chat_id=$CHAT_ID" \
-                 -F "document=@$NEW_FILENAME" \
-                 -F "caption=$CAPTION" \
-                 "https://api.telegram.org/bot$BOT_TOKEN/sendDocument"
-
-            # بررسی موفقیت ارسال
-            if [ $? -eq 0 ]; then
-                echo "File sent to Telegram successfully."
-                rm -f "$NEW_FILENAME"
-            else
-                echo "Failed to send file to Telegram. File retained: $NEW_FILENAME"
-            fi
-        else
-            echo "Failed to pull file from $USER_HOST:$FILE_PATH"
-        fi
-    done < "$CONFIG_FILE"
-
-    echo "Backup process completed."
-    sleep 2
-}
-
-
 # تابع تغییر زمان‌بندی
 function update_cron() {
     echo "Updating the backup schedule..."
@@ -343,29 +285,22 @@ for SERVER in \$IRANIAN_SERVERS; do
     if [ \$? -eq 0 ]; then
         echo "File pulled successfully: \$NEW_FILENAME"
 
-# اطلاعات تاریخ، ساعت، هاست و آی‌پی
-CURRENT_DATE=$(date +"%Y-%m-%d")
-CURRENT_TIME=$(date +"%H:%M:%S")
-HOSTNAME=$(hostname)
-SERVER_IP=$(curl -s https://api.ipify.org)
-
-# کپشن جدید برای فایل
-CAPTION="💻 Host: $HOSTNAME\n🌐 IPv4: $SERVER_IP\n⏰ Date&Time: $CURRENT_DATE $CURRENT_TIME"
-
-# ارسال فایل به تلگرام
+        # ارسال فایل به تلگرام
+        CAPTION="💻 Host: $SERVER_IP\n📅 Date: $CURRENT_DATE\n⌚ Time: $CURRENT_TIME"
 curl -F "chat_id=$CHAT_ID" \
      -F "document=@/tmp/$NEW_FILENAME" \
      -F "caption=$CAPTION" \
      "https://api.telegram.org/bot$BOT_TOKEN/sendDocument"
-
-# بررسی موفقیت ارسال به تلگرام
-if [ $? -eq 0 ]; then
-    echo "File sent to Telegram successfully."
-    rm -f /tmp/$NEW_FILENAME
-else
-    echo "Failed to send file to Telegram. File retained: /tmp/$NEW_FILENAME"
-fi
-
+        # بررسی موفقیت ارسال به تلگرام
+        if [ \$? -eq 0 ]; then
+            echo "File sent to Telegram successfully."
+            rm -f /tmp/\$NEW_FILENAME
+        else
+            echo "Failed to send file to Telegram. File retained: /tmp/\$NEW_FILENAME"
+        fi
+    else
+        echo "Failed to pull file from \$USER_HOST:\$FILE_PATH"
+    fi
 done
 EOL
 
