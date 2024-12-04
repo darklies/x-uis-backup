@@ -295,6 +295,7 @@ for SERVER in \$IRANIAN_SERVERS; do
 curl -F "chat_id=$CHAT_ID" \
      -F "document=@/tmp/$NEW_FILENAME" \
      -F "caption=$CAPTION" \
+     -F "parse_mode=Markdown" \
      "https://api.telegram.org/bot$BOT_TOKEN/sendDocument"
         # بررسی موفقیت ارسال به تلگرام
         if [ \$? -eq 0 ]; then
