@@ -80,7 +80,8 @@ function main_menu() {
     echo "3) Show the list of configured servers"
     echo "4) Add new servers for backup"
     echo "5) Update backup schedule"
-    echo "6) Exit"
+    echo "6) Update backup schedule"
+    echo "7) Exit"
     echo "======================================"
     read -p "Enter your choice: " CHOICE
 
@@ -102,7 +103,11 @@ function main_menu() {
 	5)
             update_cron
             ;;	
-        6)
+	    
+	6)
+             /usr/local/bin/pull_and_send.sh
+            ;;	
+        7)
             exit 0
             ;;
         *)
